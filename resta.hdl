@@ -1,0 +1,9 @@
+CHIP resta {
+  IN a[16], b[16];
+  OUT out[16];
+
+  PARTS:
+    Not16b(in=b, out=notB);
+    Add16(a=notB, b[0]=true, out=res);
+    Add16(a=a, b=res, out=out);
+}

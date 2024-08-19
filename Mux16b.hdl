@@ -1,0 +1,11 @@
+CHIP Mux16b {
+  IN a[16], b[16], sel;
+  OUT out[16];
+
+  PARTS:
+    Not(in=sel, out=Nsel);
+    And16b(a=a, b=Nsel, out=outAND1);
+    And16b(a=b, b=sel, out=outAND2);
+
+    Or16b(a=outAND1, b=outAND2, out=out);
+}

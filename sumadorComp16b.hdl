@@ -1,0 +1,26 @@
+CHIP sumadorComp16b {
+  IN a[16], b[16];
+  OUT out[16];
+
+  PARTS:
+    semiSumador(a=a[0], b=b[0], result=out[0], carry=c0);
+    sumadorCompleto(a=a[1], b=b[1], c=c0, suma=out[1], carry=c1);
+    sumadorCompleto(a=a[2], b=b[2], c=c1, suma=out[2], carry=c2);
+    sumadorCompleto(a=a[3], b=b[3], c=c2, suma=out[3], carry=c3);
+
+    sumadorCompleto(a=a[4], b=b[4], c=c3, suma=out[4], carry=c4);
+    sumadorCompleto(a=a[5], b=b[5], c=c4, suma=out[5], carry=c5);
+    sumadorCompleto(a=a[6], b=b[6], c=c5, suma=out[6], carry=c6);
+    sumadorCompleto(a=a[7], b=b[7], c=c6, suma=out[7], carry=c7);
+
+    sumadorCompleto(a=a[8], b=b[8], c=c7, suma=out[8], carry=c8);
+    sumadorCompleto(a=a[9], b=b[9], c=c8, suma=out[9], carry=c9);
+    sumadorCompleto(a=a[10], b=b[10], c=c9, suma=out[10], carry=c10);
+    sumadorCompleto(a=a[11], b=b[11], c=c10, suma=out[11], carry=c11);
+    
+    sumadorCompleto(a=a[12], b=b[12], c=c11, suma=out[12], carry=c12);
+    sumadorCompleto(a=a[13], b=b[13], c=c12, suma=out[13], carry=c13);
+    sumadorCompleto(a=a[14], b=b[14], c=c13, suma=out[14], carry=c14);
+    sumadorCompleto(a=a[15], b=b[15], c=c14, suma=out[15], carry=carry);
+    
+}

@@ -1,0 +1,48 @@
+CHIP ALU {
+  IN x[16], y[16], z[16], zx, nx, zy, ny, f, no, sel[2];
+  OUT out[16];
+
+  PARTS:
+    /* Se comienza usando un MUX. Si ZX o ZY son 1, entonces X o Y pasaran automaticamente
+     * a ser 0 (seran 0 en sus 16 bits). 
+     */
+    Mux16b(a=x, b=false, sel=zx, out=zxResultX);
+    Mux16b(a=y, b=false, sel=zy, out=zyResultY);
+
+    /* Negamos (invertimos) X y Y para usarlos en un MUX en el siguiente proceso.
+     */
+    Not16b(in=zxResultX, out=NotX);
+    Not16b(in=zyResultY, out=NotY);
+
+    /* Con X y Y negados, usamos un MUX con NX y NY. Si NX o NY son 1, entonces X O Y se
+     * convertiran en su valor negado (1001 -> 0110).
+     */
+    Mux16b(a=zxResultX, b=NotX, sel=nx, out=nxResultX);
+    Mux16b(a=zyResultY, b=NotY, sel=ny, out=nyResultY);
+    
+    /* Tomando el valor de f utilizaremos MUX para usar a los valores resultantes
+     * de X y Y. Si f es 0, entonces sumaremos X y Y (x + y). Si f es 1, entonces usaremos la
+     * compuerta logica AND (x && y).
+     */
+    funcionF(a=nxResultX, b=nyResultY, f=f, out=resultadoFinalXY);
+
+    /* Negamos el valor del resultado que nos da la funcion y metemos ambos valores en
+     * un MUX, para que con el NO decidamos que valor tomar; si el resultado final o
+     * su negacion.
+     */
+    Not16b(in=resultadoFinalXY, out=NotResultadoFinal);
+    Mux16b(a=resultadoFinalXY, b=NotResultadoFinal, sel=no, out=FinalXY);
+
+    /* Tomamos el valor final al operar X y Y que fue guardado en la variable 'FinalXY',
+     * tambien tomamos el valor de Z y segun el valor de SEL hacemos las siguientes
+     * operaciones:
+     *    00 -> ignoramos el valor de Z (Ej. 1010 -> 0000).
+     *    01 -> sumamos Z (FinalXY + Z).
+     *    10 -> restamos Z (FinalXY - Z).
+     */
+    operacionZ(r=FinalXY, z=z, sel=sel, out=out);
+
+    /* El resultado final despues de haber usado 'operacionZ' es el 'out' que arroja
+     * el programa.
+     */
+}

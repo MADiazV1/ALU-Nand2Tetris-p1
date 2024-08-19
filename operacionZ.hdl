@@ -1,0 +1,38 @@
+CHIP operacionZ {
+  IN r[16], z[16], sel[2];
+  OUT out[16];
+
+  PARTS:
+    /* Usamos la compuerta logica NOR para obtener la primera funcion de Z. Si
+     * SEL -> 00, entonces ignoramos Z. Usamos MUX para con el resultado de NOR para
+     * saber si tomamos el valor asignado de Z o ese valor lo reemplazamos por 0s.
+     *     SEL = 00, entonces 1010 -> 0000.
+     *     SEL = 01 o 10, entonces 1010 -> 1010.
+     */
+    Or(a=sel[0], b=sel[1], out=res);
+    Not(in=res, out=Nor);
+    Mux16b(a=z, b=false, sel=Nor, out=hayZ);
+
+    /* Usamos la suma y resta en las mismas circunstancias, ya que si tomamos el valor
+     * real de Z, las operaciones se cumplen de igual forma. Pero si tomamos el valor
+     * que reemplazamos, logicamente sumar o restar 0 a cualquier numero CASI siempre
+     * da el mismo numero.
+     */
+    sumadorComp16b(a=r, b=hayZ, out=sumaZ);
+    resta(a=r, b=hayZ, out=restaZ);
+
+    /* Teniendo en cuenta los resultados finales, comparamos el primer valor (en bits)
+     * de SEL.
+     * PDT: Por alguna casualidad tenia que negar el resultado ya que asi funciona
+     * normal, o sumaba o restaba. Si no lo hacia, el programa arrojaba la suma en
+     * ambos casos.
+     */
+    And(a=sel[0], b=true, out=sumaOresta);
+    Not(in=sumaOresta, out=SOR);
+
+    /* Al final usamos el MUX para enviar el resultado.
+     * SOR = 0, entonces envia el valor de la suma.
+     * SOR = 1, entonces envia el valor de la resta.
+     */
+    Mux16b(a=sumaZ, b=restaZ, sel=SOR, out=out);
+}

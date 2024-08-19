@@ -1,0 +1,15 @@
+CHIP funcionF {
+  IN a[16], b[16], f;
+  OUT out[16];
+
+  PARTS:
+    /* Recibimos f para saber si debemos sumar (A+B) o comparar (A&&B). */
+    Not(in=f, out=NotF);
+    sumadorComp16b(a=a, b=b, out=outSuma);
+    And16bx16b(a=a, b=b, out=outAnd);
+
+    /* Despues de haber hecho las operaciones designadas, usamos un MUX que tiene la
+     * entrada f para saber si enviamos el resultado sumado o comparado.
+     */
+    Mux16b(a=outSuma, b=outAnd, sel=NotF, out=out);
+}

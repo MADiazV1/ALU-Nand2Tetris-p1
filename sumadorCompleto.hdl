@@ -1,0 +1,10 @@
+CHIP sumadorCompleto {
+  IN a, b, c;
+  OUT suma, carry;
+
+  PARTS:
+    semiSumador(a=a, b=b, result=suma1, carry=carry1);
+    semiSumador(a=suma1, b=c, result=suma, carry=carry2);
+
+    Or(a=carry1, b=carry2, out=carry);
+}
